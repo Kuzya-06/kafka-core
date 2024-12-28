@@ -35,9 +35,9 @@ public class KafkaConsumerSeekApp {
 
         try (var consumer = new KafkaConsumer<String, String>(properties)) {
             consumer.assign(List.of(
-//                    new TopicPartition("test-topic", 0),
-//                    new TopicPartition("test-topic", 1)
-//                    ,
+                    new TopicPartition("test-topic", 0),
+                    new TopicPartition("test-topic", 1)
+                    ,
                     new TopicPartition("test-topic", 2)
             ));
 
@@ -56,16 +56,38 @@ public class KafkaConsumerSeekApp {
             // очень затратное по времени.
             //TODO проверить время выполнения
             Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes =
-                    consumer.offsetsForTimes(Map.of(new TopicPartition("test-topic", 2), offsetForTimes));
+                    consumer.offsetsForTimes(Map.of(new TopicPartition("test-topic", 0), offsetForTimes
+                    ,new TopicPartition("test-topic", 1), offsetForTimes,
+                            new TopicPartition("test-topic", 2), offsetForTimes));
 
+            //------------------------------------------
             consumer.seek(new TopicPartition("test-topic", 2),
                     offsetsForTimes.get(new TopicPartition("test-topic", 2)).offset());
 
-            //------------------------------------------
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
 //            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
             StreamSupport.stream(records.spliterator(), false)
+                    .forEach(record -> LOGGER.info("\nRecord: {}", record));
+
+            //------------------------------------------
+            consumer.seek(new TopicPartition("test-topic", 0),
+                    offsetsForTimes.get(new TopicPartition("test-topic", 0)).offset());
+
+            ConsumerRecords<String, String> records1 = consumer.poll(Duration.ofSeconds(5));
+//            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+
+            StreamSupport.stream(records1.spliterator(), false)
+                    .forEach(record -> LOGGER.info("\nRecord: {}", record));
+
+            //------------------------------------------
+            consumer.seek(new TopicPartition("test-topic", 1),
+                    offsetsForTimes.get(new TopicPartition("test-topic", 1)).offset());
+
+            ConsumerRecords<String, String> records2 = consumer.poll(Duration.ofSeconds(5));
+//            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+
+            StreamSupport.stream(records2.spliterator(), false)
                     .forEach(record -> LOGGER.info("\nRecord: {}", record));
 
         }
