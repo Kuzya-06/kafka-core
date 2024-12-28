@@ -73,6 +73,15 @@ public class KafkaProducerApp {
             LOGGER.info("Metadate метка времени: {}", metadata.toString());
             LOGGER.info("==============================");
 
+            //------------------------------------------
+            //Callback
+            recordMetadata =
+                    producer.send(new ProducerRecord<>("test-topic", "Один топик"),
+                            (md, exception)->LOGGER.info("Callback: metadata: {}, exception == null:{}", md,
+                                    exception==null)).get();
+            LOGGER.info("==============================");
+            LOGGER.info("Metadate: {}", recordMetadata.toString());
+            LOGGER.info("==============================");
 
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
