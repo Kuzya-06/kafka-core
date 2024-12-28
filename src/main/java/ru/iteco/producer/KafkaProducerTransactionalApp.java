@@ -1,4 +1,4 @@
-package ru.iteco;
+package ru.iteco.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
