@@ -3,7 +3,7 @@ package ru.iteco.consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -12,6 +12,7 @@ import ru.iteco.producer.KafkaProducerApp;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.StreamSupport;
 
@@ -47,8 +48,20 @@ public class KafkaConsumerSeekApp {
 //                    new OffsetAndMetadata(5));
 // Альтернатива seek()
 //            consumer.seekToBeginning(List.of(new TopicPartition("test-topic", 2)));
-            consumer.seekToEnd(List.of(new TopicPartition("test-topic", 2)));
+//            consumer.seekToEnd(List.of(new TopicPartition("test-topic", 2)));
 
+            //-------------------------------------
+//            Long offsetForTimes = 1735391180402L; // 16 offset
+            Long offsetForTimes = 1735391180405L; // 17 offset
+            // очень затратное по времени.
+            //TODO проверить время выполнения
+            Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes =
+                    consumer.offsetsForTimes(Map.of(new TopicPartition("test-topic", 2), offsetForTimes));
+
+            consumer.seek(new TopicPartition("test-topic", 2),
+                    offsetsForTimes.get(new TopicPartition("test-topic", 2)).offset());
+
+            //------------------------------------------
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
 //            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
