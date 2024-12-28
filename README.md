@@ -1,7 +1,29 @@
 # kafka-core
 
-Настройка кафки, продюсера, консюмера. Смотреть коммиты
+Настройка кафки, продюсера, консюмера. Смотреть коммиты.  
+Запустить Docker
+```bash
+docker run -d --name broker apache/kafka:latest
+```
+```bash
+docker compose up
+```
+```bash
+cd c://Kafka/kafka_2.13-3.7.0/bin
+```
+Создать топик:
+```bash
+./kafka-topics.sh --bootstrap-server localhost:29092 --create --topic test-topic
+```
+Запустить продюсер с топиком test-topic
+```bash
+./kafka-console-producer.sh --bootstrap-server localhost:29092 --topic test-topic
+```
+Прочитайте события в теме теста с начала журнала:  
+```bash
+./kafka-console-consumer.sh --bootstrap-server localhost:29092 --topic test-topic --from-beginning
 
+```
 # Producer
 
 # Consumer
